@@ -5,30 +5,33 @@ const inputCountry = document.querySelector('input');
 const countryList = document.querySelector('.country-list');
 const countryInfo = document.querySelector('.country-info');
 
-const DEBOUNCE_DELAY = 300;
+const DEBOUNCE_DELAY = 600;
 
 const test = () => {
-  console.log('test');
+  find = inputCountry.value;
+  fetchCountries()
+    .then(countries => renderContriesList(countries))
+    .catch(error => console.log(error));
 };
 
 var debounce = require('lodash.debounce');
 var debounced = debounce(test, DEBOUNCE_DELAY);
 
-document.querySelector('button').addEventListener('click', debounced);
+//document.querySelector('button').addEventListener('click', debounced);
 
-inputCountry.addEventListener('input', () => {
-  fetchCountries(name)
-    .then(users => renderUserList(users))
-    .catch(error => console.log(error));
-});
+// inputCountry.addEventListener('input', () => {
+//   fetchCountries(name)
+//     .then(users => renderUserList(users))
+//     .catch(error => console.log(error));
+// });
 
 Notiflix.Notify.failure('Qui timide rogat docet negare');
 Notiflix.Notify.info('Cogito ergo sum');
 
 const searchParams = new URLSearchParams({
-  _limit: 2,
-  _sort: 'name',
-  _fields: 'name,capital,population,flags.svg,languages',
+  //_limit: 2,
+  //_sort: 'name',
+  fields: 'name,capital,population,flags.svg,languages',
 });
 
 console.log(searchParams.toString());
@@ -41,9 +44,7 @@ document.querySelector('button').addEventListener('click', () => {
 
 let find = '';
 
-inputCountry.addEventListener('input', () => {
-  find = inputCountry.value;
-});
+inputCountry.addEventListener('input', debounced);
 
 function fetchCountries(name) {
   // GET https://restcountries.com/v2/name/{name}
@@ -75,8 +76,10 @@ function renderContriesList(countries) {
     })
     .join('');
   countryList.innerHTML = markup;
+
+  counter.innerHTML = countries.length;
 }
 // flags.svg
 // https://restcountries.com/v2/name/{name}
 
-
+const counter = document.querySelector('#counter');
