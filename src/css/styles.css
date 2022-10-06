@@ -1,5 +1,6 @@
 * {
   box-sizing: border-box;
+  margin: 0;
 }
 
 body {
@@ -10,11 +11,26 @@ body {
   background-color: #fafafa;
   color: #212121;
   line-height: 1.5;
+
+  height: 100vh;
+  padding: 20px;
+}
+
+p {
+  text-transform: uppercase;
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  font-weight: bolder;
+  color: #777;
 }
 
 #search-box {
   font: inherit;
   padding: 8px;
-  max-width: 320px;
-  margin-bottom: 16px;
+  width: 520px;
+  display: block;
+  border-radius: 5px;
+}
+
+.country-list {
+  font-size: 15px;
 }
