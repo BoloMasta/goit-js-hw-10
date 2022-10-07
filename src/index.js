@@ -48,10 +48,14 @@ function renderContriesList(countries) {
   } else if (countries.length > 1 && countries.length <= 10) {
     const markup = countries
       .map(country => {
-        return `<li>
-                    <img src="${country.flags.svg}" alt="" width="50px">
-                    <p style="display: inline"> ${country.name}</p>
-                </li>`;
+        return `<a href=""
+                onclick="fetchCountries(name); renderContriesList(countries); console.log("SSSS")">
+                <li>
+                <img src="${country.flags.svg}" alt="" width="50px">
+                <p style="display: inline"> ${country.name}</p>
+                </li>
+                </a>
+                `;
       })
       .join('');
     countryList.innerHTML = markup;

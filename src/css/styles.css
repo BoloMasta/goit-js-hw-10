@@ -54,11 +54,17 @@ h1 {
   border-radius: 5px;
 }
 
-.country-list li:nth-child(odd) {
+.country-list a {
+  color: black;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.country-list a:nth-child(odd) li {
   background-color: rgb(243, 241, 241);
 }
 
-.country-list li:nth-child(even) {
+.country-list a:nth-child(even) li {
   background-color: rgb(231, 231, 231);
 }
 
