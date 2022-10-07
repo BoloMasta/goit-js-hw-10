@@ -1,85 +1,65 @@
 import './css/styles.css';
 import Notiflix from 'notiflix';
+import { fetchCountries } from '../src/fetchCountries';
 
 const inputCountry = document.querySelector('input');
 const countryList = document.querySelector('.country-list');
 const countryInfo = document.querySelector('.country-info');
 
-const DEBOUNCE_DELAY = 600;
-
-const test = () => {
-  find = inputCountry.value;
-  fetchCountries()
-    .then(countries => renderContriesList(countries))
-    .catch(error => console.log(error));
+const type = () => {
+  const name = inputCountry.value.trim();
+  if (name.length >= 1) {
+    fetchCountries(name)
+      .then(countries => renderContriesList(countries))
+      .catch(error =>
+        Notiflix.Notify.failure('Oops, there is no country with that name')
+      );
+  }
 };
 
+// debounce
+const DEBOUNCE_DELAY = 600;
 var debounce = require('lodash.debounce');
-var debounced = debounce(test, DEBOUNCE_DELAY);
-
-//document.querySelector('button').addEventListener('click', debounced);
-
-// inputCountry.addEventListener('input', () => {
-//   fetchCountries(name)
-//     .then(users => renderUserList(users))
-//     .catch(error => console.log(error));
-// });
-
-Notiflix.Notify.failure('Qui timide rogat docet negare');
-Notiflix.Notify.info('Cogito ergo sum');
-
-const searchParams = new URLSearchParams({
-  //_limit: 2,
-  //_sort: 'name',
-  fields: 'name,capital,population,flags.svg,languages',
-});
-
-console.log(searchParams.toString());
-
-document.querySelector('button').addEventListener('click', () => {
-  fetchCountries()
-    .then(countries => renderContriesList(countries))
-    .catch(error => console.log(error));
-});
-
-let find = '';
+var debounced = debounce(type, DEBOUNCE_DELAY);
 
 inputCountry.addEventListener('input', debounced);
+inputCountry.placeholder = 'type here';
 
-function fetchCountries(name) {
-  // GET https://restcountries.com/v2/name/{name}
-  // Accept: application/json
-  // ?fields={name.official},{capital},{population},{flags.svg},{languages}
-
-  return fetch(
-    'https://restcountries.com/v2/name/' +
-      find +
-      '?fields=name,capital,population,flags,languages'
-  ).then(response => {
-    if (!response.ok) {
-      throw new Error(response.status);
-    }
-    return response.json();
-  });
-}
-
+// rendering results
 function renderContriesList(countries) {
-  const markup = countries
-    .map(country => {
-      return `<li>
-            <p><b>Country name</b>: ${country.name}</p>
-            <p><b>Capital</b>: ${country.capital}</p>
-            <p><b>Population</b>: ${country.population}</p>
-            <p><b>flags.svg</b>: ${country.flags.svg}</p>
-            <p><b>Languages</b>: ${country.languages[0].name}</p>
-          </li>`;
-    })
-    .join('');
-  countryList.innerHTML = markup;
+  // cleaning results
+  countryList.innerHTML = '';
+  countryInfo.innerHTML = '';
 
-  counter.innerHTML = countries.length;
+  // detail rendering of 1 country
+  if (countries.length === 1) {
+    const markup = countries
+      .map(country => {
+        return `<img src="${country.flags.svg}" alt="" width="50px">
+                <p style="display: inline; font-size: 24px"><b> ${country.name}</b></p>
+                <p><b>Capital</b>: ${country.capital}</p>
+                <p><b>Population</b>: ${country.population}</p>
+                <p><b>Languages</b>: ${country.languages[0].name}</p>`;
+      })
+      .join('');
+    countryInfo.innerHTML = markup;
+
+    // coutries list rendering
+  } else if (countries.length > 1 && countries.length <= 10) {
+    const markup = countries
+      .map(country => {
+        return `<li>
+                    <img src="${country.flags.svg}" alt="" width="50px">
+                    <p style="display: inline"> ${country.name}</p>
+                </li>`;
+      })
+      .join('');
+    countryList.innerHTML = markup;
+
+    // too many results
+  } else {
+    Notiflix.Notify.info(
+      'Too many matches found. Please enter a more specific name.'
+    );
+  }
 }
-// flags.svg
-// https://restcountries.com/v2/name/{name}
-
-const counter = document.querySelector('#counter');

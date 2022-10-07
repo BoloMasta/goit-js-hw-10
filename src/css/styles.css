@@ -11,12 +11,10 @@ body {
   background-color: #fafafa;
   color: #212121;
   line-height: 1.5;
-
-  height: 100vh;
   padding: 20px;
 }
 
-p {
+h1 {
   text-transform: uppercase;
   font-family: 'Trebuchet MS', Arial, sans-serif;
   font-weight: bolder;
@@ -31,6 +29,40 @@ p {
   border-radius: 5px;
 }
 
+#search-box::placeholder {
+  text-transform: uppercase;
+  opacity: 0.4;
+}
+
+.country-info img {
+  margin-right: 15px;
+}
+
+.country-info p {
+  line-height: 2;
+}
+
 .country-list {
-  font-size: 15px;
+  list-style: none;
+  padding: 5px;
+}
+
+.country-list li {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.country-list li:nth-child(odd) {
+  background-color: rgb(243, 241, 241);
+}
+
+.country-list li:nth-child(even) {
+  background-color: rgb(231, 231, 231);
+}
+
+.country-list p {
+  margin-left: 15px;
+  font-size: 18px;
 }
