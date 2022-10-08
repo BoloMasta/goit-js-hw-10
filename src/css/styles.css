@@ -1,3 +1,10 @@
+:root {
+  --listGreyLighter: rgb(243, 241, 241);
+  --listGreyLight: rgb(231, 231, 231);
+  --listGreyDark: rgb(107, 107, 107);
+  --listHighlight: rgb(252, 175, 9);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -18,15 +25,22 @@ h1 {
   text-transform: uppercase;
   font-family: 'Trebuchet MS', Arial, sans-serif;
   font-weight: bolder;
-  color: #777;
+  color: var(--listGreyDark);
 }
-
+#search-box:hover,
+#search-box:active,
+#search-box:focus {
+  border: 2px solid var(--listHighlight);
+  background-color: var(--listGreyLight);
+}
 #search-box {
   font: inherit;
   padding: 8px;
-  width: 520px;
-  display: block;
+  width: 550px;
+  display: inline-block;
   border-radius: 5px;
+  outline: none;
+  background-color: var(--listGreyLighter);
 }
 
 #search-box::placeholder {
@@ -34,8 +48,25 @@ h1 {
   opacity: 0.4;
 }
 
+.clearBtn {
+  width: 40px;
+  position: absolute;
+  margin-left: -50px;
+  margin-top: 2px;
+  opacity: 0.5;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.clearBtn:hover {
+  opacity: 0.9;
+}
+
 .country-info img {
   margin-right: 15px;
+  max-width: 80px;
+  max-height: 50px;
+  box-shadow: 1px 4px 20px -9px rgba(0, 0, 0, 0.81);
 }
 
 .country-info p {
@@ -47,25 +78,55 @@ h1 {
   padding: 5px;
 }
 
-.country-list li {
-  display: flex;
-  align-items: center;
-  padding: 5px;
-  border-radius: 5px;
+.country-list a:active,
+.country-list a:focus {
+  border: 2px solid var(--listHighlight);
+  background-color: var(--listGreyLight);
 }
-
 .country-list a {
   color: black;
   cursor: pointer;
   text-decoration: none;
 }
 
+.country-list a:focus body {
+  background-color: red;
+}
+
+.country-list li {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  border-radius: 5px;
+  width: 540px;
+  transition: all 0.3s ease-in-out;
+  outline: none;
+}
+
+.country-list li:active,
+.country-list li:focus {
+  border: 2px solid var(--listHighlight);
+  background-color: var(--listGreyLight);
+}
+
+.country-list img {
+  width: 50px;
+  height: 35px;
+  box-shadow: 1px 4px 17px -9px rgba(0, 0, 0, 0.81);
+}
+
 .country-list a:nth-child(odd) li {
-  background-color: rgb(243, 241, 241);
+  background-color: var(--listGreyLighter);
 }
 
 .country-list a:nth-child(even) li {
-  background-color: rgb(231, 231, 231);
+  background-color: var(--listGreyLight);
+}
+
+.country-list a li:hover {
+  color: var(--listHighlight);
+  background-color: var(--listGreyDark);
+  font-weight: bold;
 }
 
 .country-list p {

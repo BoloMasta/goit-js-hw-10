@@ -6,14 +6,30 @@ const inputCountry = document.querySelector('input');
 const countryList = document.querySelector('.country-list');
 const countryInfo = document.querySelector('.country-info');
 
+// clear button
+const clearBtn = document.querySelector('.clearBtn');
+clearBtn.addEventListener('click', () => {
+  inputCountry.value = '';
+  clearResult();
+  inputCountry.focus();
+});
+
+// cleaning results
+const clearResult = () => {
+  countryList.innerHTML = '';
+  countryInfo.innerHTML = '';
+};
+
 const type = () => {
   const name = inputCountry.value.trim();
   if (name.length >= 1) {
     fetchCountries(name)
       .then(countries => renderContriesList(countries))
-      .catch(error =>
+      .catch(() =>
         Notiflix.Notify.failure('Oops, there is no country with that name')
       );
+  } else {
+    clearResult();
   }
 };
 
@@ -27,19 +43,27 @@ inputCountry.placeholder = 'type here';
 
 // rendering results
 function renderContriesList(countries) {
-  // cleaning results
-  countryList.innerHTML = '';
-  countryInfo.innerHTML = '';
+  clearResult();
 
   // detail rendering of 1 country
   if (countries.length === 1) {
     const markup = countries
       .map(country => {
-        return `<img src="${country.flags.svg}" alt="" width="50px">
-                <p style="display: inline; font-size: 24px"><b> ${country.name}</b></p>
+        // creating array of languages
+        let languages = [];
+        country.languages.forEach(language => {
+          languages.push(language.name);
+        });
+
+        return `<img src="${country.flags.svg}" alt="flag of ${
+          country.name
+        }" width="60px">
+                <p style="display: inline; font-size: 24px"><b> ${
+                  country.name
+                }</b></p>
                 <p><b>Capital</b>: ${country.capital}</p>
                 <p><b>Population</b>: ${country.population}</p>
-                <p><b>Languages</b>: ${country.languages[0].name}</p>`;
+                <p><b>Languages</b>: ${languages.join(', ')}</p>`;
       })
       .join('');
     countryInfo.innerHTML = markup;
@@ -48,17 +72,32 @@ function renderContriesList(countries) {
   } else if (countries.length > 1 && countries.length <= 10) {
     const markup = countries
       .map(country => {
-        return `<a href=""
-                onclick="fetchCountries(name); renderContriesList(countries); console.log("SSSS")">
-                <li>
-                <img src="${country.flags.svg}" alt="" width="50px">
+        return `<a href="#">
+                <li data-country="${country.name}">
+                <img src="${country.flags.svg}" alt="flag of ${country.name}" width="50px">
                 <p style="display: inline"> ${country.name}</p>
                 </li>
-                </a>
-                `;
+                </a>`;
       })
       .join('');
     countryList.innerHTML = markup;
+
+    // go into details
+    function linkToDetails() {
+      countries = Array(
+        countries.find(
+          element => element.name === event.currentTarget.dataset.country
+        )
+      );
+      renderContriesList(countries);
+    }
+
+    for (let i = 0; i < countries.length; i++) {
+      countryList.children[i].children[0].addEventListener(
+        'click',
+        linkToDetails
+      );
+    }
 
     // too many results
   } else {
