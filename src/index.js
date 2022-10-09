@@ -20,11 +20,25 @@ const clearResult = () => {
   countryInfo.innerHTML = '';
 };
 
+function isName(value) {
+  if (country.name.includes(value)) {
+    return value;
+  }
+}
+
 const type = () => {
   const name = inputCountry.value.trim();
   if (name.length >= 1) {
     fetchCountries(name)
+      // filtering names that contain entered string
+      .then(countries =>
+        countries.filter(country => country.name.toLowerCase().includes(name))
+      )
+
+      // rendering results
       .then(countries => renderContriesList(countries))
+
+      // no result
       .catch(() =>
         Notiflix.Notify.failure('Oops, there is no country with that name')
       );
