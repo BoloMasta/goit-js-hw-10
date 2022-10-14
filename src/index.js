@@ -20,14 +20,9 @@ const clearResult = () => {
   countryInfo.innerHTML = '';
 };
 
-function isName(value) {
-  if (country.name.includes(value)) {
-    return value;
-  }
-}
-
+// fetch from input
 const type = () => {
-  const name = inputCountry.value.trim();
+  const name = inputCountry.value.trim().toLowerCase();
   if (name.length >= 1) {
     fetchCountries(name)
       // filtering names that contain entered string
@@ -38,7 +33,7 @@ const type = () => {
       // rendering results
       .then(countries => renderContriesList(countries))
 
-      // no result
+      // no results
       .catch(() =>
         Notiflix.Notify.failure('Oops, there is no country with that name')
       );
@@ -69,12 +64,8 @@ function renderContriesList(countries) {
           languages.push(language.name);
         });
 
-        return `<img src="${country.flags.svg}" alt="flag of ${
-          country.name
-        }" width="60px">
-                <p style="display: inline; font-size: 24px"><b> ${
-                  country.name
-                }</b></p>
+        return `<img src="${country.flags.svg}" alt="flag of ${country.name}">
+                <p><b> ${country.name}</b></p>
                 <p><b>Capital</b>: ${country.capital}</p>
                 <p><b>Population</b>: ${country.population}</p>
                 <p><b>Languages</b>: ${languages.join(', ')}</p>`;
