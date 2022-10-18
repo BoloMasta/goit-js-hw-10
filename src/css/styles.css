@@ -64,13 +64,19 @@ h1 {
   position: absolute;
   margin-left: -50px;
   margin-top: 2px;
-  opacity: 0.5;
+  opacity: 0.6;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
 }
 
 .clearBtn:hover {
   opacity: 0.9;
+}
+
+.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 /* country-info */

@@ -12,6 +12,7 @@ clearBtn.addEventListener('click', () => {
   inputCountry.value = '';
   clearResult();
   inputCountry.focus();
+  clearBtn.classList.add('is-hidden');
 });
 
 // cleaning results
@@ -23,7 +24,14 @@ const clearResult = () => {
 // fetch from input
 const type = () => {
   const name = inputCountry.value.trim().toLowerCase();
+
+  if (name.length === 0) {
+    clearBtn.classList.add('is-hidden');
+  }
+
   if (name.length >= 1) {
+    clearBtn.classList.remove('is-hidden');
+
     fetchCountries(name)
       // filtering names that contain entered string
       .then(countries =>
@@ -97,11 +105,10 @@ function renderContriesList(countries) {
       renderContriesList(countries);
     }
 
-    for (let i = 0; i < countries.length; i++) {
-      countryList.children[i].children[0].addEventListener(
-        'click',
-        linkToDetails
-      );
+    for (const country of countries) {
+      countryList
+        .querySelector(`[data-country="${country.name}"]`)
+        .addEventListener('click', linkToDetails);
     }
 
     // too many results
