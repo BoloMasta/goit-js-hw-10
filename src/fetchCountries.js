@@ -18,9 +18,12 @@ export const fetchCountries = async name => {
         name +
         '?fields=name,capital,population,flags,languages'
     );
-    const countries = await response.json();
-    return countries;
+
+    if (response.status == 200) {
+      let json = await response.json();
+      return json;
+    }
   } catch (error) {
-    console.log(error.message);
+    throw new Error(response.status);
   }
 };
