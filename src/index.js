@@ -21,6 +21,19 @@ const clearResult = () => {
   countryInfo.innerHTML = '';
 };
 
+// number formatting
+function formatNumberToK(num) {
+  if (num >= 1000000000)
+    return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'G';
+
+  if (num >= 1000000)
+    return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+
+  if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+
+  return num;
+}
+
 // fetch from input
 const type = async () => {
   const name = inputCountry.value.trim().toLowerCase();
@@ -74,7 +87,7 @@ function renderContriesList(countries) {
         return `<img src="${country.flags.svg}" alt="flag of ${country.name}">
                 <p><b> ${country.name}</b></p>
                 <p><b>Capital</b>: ${country.capital}</p>
-                <p><b>Population</b>: ${country.population}</p>
+                <p><b>Population</b>: ${formatNumberToK(country.population)}</p>
                 <p><b>Languages</b>: ${languages.join(', ')}</p>`;
       })
       .join('');
