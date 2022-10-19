@@ -22,7 +22,7 @@ const clearResult = () => {
 };
 
 // fetch from input
-const type = () => {
+const type = async () => {
   const name = inputCountry.value.trim().toLowerCase();
 
   if (name.length === 0) {
@@ -32,19 +32,34 @@ const type = () => {
   if (name.length >= 1) {
     clearBtn.classList.remove('is-hidden');
 
-    fetchCountries(name)
-      // filtering names that contain entered string
-      .then(countries =>
-        countries.filter(country => country.name.toLowerCase().includes(name))
-      )
+    try {
+      const countries = await fetchCountries(name)
+        // filtering names that contain entered string
+        .then(countries =>
+          countries.filter(country => country.name.toLowerCase().includes(name))
+        )
 
-      // rendering results
-      .then(countries => renderContriesList(countries))
+        // rendering results
+        .then(countries => renderContriesList(countries));
 
       // no results
-      .catch(() =>
-        Notiflix.Notify.failure('Oops, there is no country with that name')
-      );
+    } catch (error) {
+      Notiflix.Notify.failure('Oops, there is no country with that name');
+    }
+
+    // fetchCountries(name)
+    //   // filtering names that contain entered string
+    //   .then(countries =>
+    //     countries.filter(country => country.name.toLowerCase().includes(name))
+    //   )
+
+    //   // rendering results
+    //   .then(countries => renderContriesList(countries))
+
+    //   // no results
+    //   .catch(() =>
+    //     Notiflix.Notify.failure('Oops, there is no country with that name')
+    //   );
   } else {
     clearResult();
   }
