@@ -33,33 +33,17 @@ const type = async () => {
     clearBtn.classList.remove('is-hidden');
 
     try {
-      const countries = await fetchCountries(name)
-        // filtering names that contain entered string
-        .then(countries =>
-          countries.filter(country => country.name.toLowerCase().includes(name))
-        )
-
-        // rendering results
-        .then(countries => renderContriesList(countries));
+      // fetch countries
+      const countries = await fetchCountries(name);
+      // filtering names that contain entered string
+      countries.filter(country => country.name.toLowerCase().includes(name));
+      // rendering results
+      renderContriesList(countries);
 
       // no results
     } catch (error) {
       Notiflix.Notify.failure('Oops, there is no country with that name');
     }
-
-    // fetchCountries(name)
-    //   // filtering names that contain entered string
-    //   .then(countries =>
-    //     countries.filter(country => country.name.toLowerCase().includes(name))
-    //   )
-
-    //   // rendering results
-    //   .then(countries => renderContriesList(countries))
-
-    //   // no results
-    //   .catch(() =>
-    //     Notiflix.Notify.failure('Oops, there is no country with that name')
-    //   );
   } else {
     clearResult();
   }
