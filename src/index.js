@@ -1,19 +1,15 @@
 import './css/styles.css';
 import Notiflix from 'notiflix';
-import { fetchCountries } from '../src/fetchCountries';
+import { fetchCountries } from './fetchCountries';
+import { formatNumberToK } from './number-formatting';
+import debounce from 'lodash.debounce';
 
 const inputCountry = document.querySelector('input');
 const countryList = document.querySelector('.country-list');
 const countryInfo = document.querySelector('.country-info');
-
-// clear button
 const clearBtn = document.querySelector('.clearBtn');
-clearBtn.addEventListener('click', () => {
-  inputCountry.value = '';
-  clearResult();
-  inputCountry.focus();
-  clearBtn.classList.add('is-hidden');
-});
+
+const DEBOUNCE_DELAY = 600;
 
 // cleaning results
 const clearResult = () => {
@@ -21,41 +17,20 @@ const clearResult = () => {
   countryInfo.innerHTML = '';
 };
 
-// number formatting
-function formatNumberToK(num) {
-  if (num >= 1000000000)
-    return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'G';
-
-  if (num >= 1000000)
-    return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
-
-  if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
-
-  return num;
-}
-
 // fetch from input
-const type = async () => {
+const typingFn = async () => {
   const name = inputCountry.value.trim().toLowerCase();
-
-  if (name.length === 0) {
-    clearBtn.classList.add('is-hidden');
-  }
 
   if (name.length >= 1) {
     clearBtn.classList.remove('is-hidden');
 
-    try {
-      // fetch countries
-      const countries = await fetchCountries(name);
-      // filtering names that contain entered string
-      countries.filter(country => country.name.toLowerCase().includes(name));
-      // rendering results
-      renderContriesList(countries);
+    const countries = await fetchCountries(name);
 
-      // no results
-    } catch (error) {
-      Notiflix.Notify.failure('Oops, there is no country with that name');
+    if (countries) {
+      countries.filter(country => country.name.toLowerCase().includes(name));
+      renderCountriesList(countries);
+    } else {
+      return Notiflix.Notify.failure('Country not found!');
     }
   } else {
     clearResult();
@@ -63,70 +38,87 @@ const type = async () => {
 };
 
 // debounce
-const DEBOUNCE_DELAY = 600;
-var debounce = require('lodash.debounce');
-var debounced = debounce(type, DEBOUNCE_DELAY);
-
+const debounced = debounce(typingFn, DEBOUNCE_DELAY);
 inputCountry.addEventListener('input', debounced);
 inputCountry.placeholder = 'type here';
 
-// rendering results
-function renderContriesList(countries) {
+// returnOneCountry
+function returnOneCountry(countries) {
+  const singleCountry = countries[0];
+  const { flags, name, capital, population, languages } = singleCountry;
+
+  const returnMarkup = () => {
+    const languagesFormatted = languages.map(lang => lang.name).join(', ');
+
+    return `
+          <img src='${flags.svg}' alt='flag of ${name}'>
+          <p><b>${name}</b></p>
+          <p><b>Capital</b>: ${capital}</p>
+          <p><b>Population</b>: ${formatNumberToK(population)}</p>
+          <p><b>Languages</b>: ${languagesFormatted}</p>`;
+  };
+
+  countryInfo.innerHTML = returnMarkup();
+}
+
+// returnMultipleCountries
+function returnMultipleCountries(countries) {
+  const returnMarkup = () => {
+    return countries
+      .map(
+        ({ name, flags }) =>
+          `
+      <a href='#'>
+        <li data-country='${name}'>
+          <img src='${flags.svg}' alt='flag of ${name}' width='50px'>
+          <p style='display: inline'> ${name}</p>
+        </li>
+      </a>
+      `
+      )
+      .join('');
+  };
+
+  countryList.innerHTML = returnMarkup();
+
+  // go into details
+  function linkToDetails() {
+    let matchingCountries = [];
+    countries?.find(country => {
+      if (country.name === event.currentTarget.dataset.country) {
+        matchingCountries.push(country);
+      }
+    });
+
+    renderCountriesList(matchingCountries);
+  }
+
+  // if more than 1 country -> generate possibility to show result earlier
+  for (const country of countries) {
+    countryList
+      .querySelector(`[data-country="${country.name}"]`)
+      .addEventListener('click', linkToDetails);
+  }
+}
+
+function renderCountriesList(countries) {
   clearResult();
 
-  // detail rendering of 1 country
   if (countries.length === 1) {
-    const markup = countries
-      .map(country => {
-        // creating array of languages
-        let languages = [];
-        country.languages.forEach(language => {
-          languages.push(language.name);
-        });
-
-        return `<img src="${country.flags.svg}" alt="flag of ${country.name}">
-                <p><b> ${country.name}</b></p>
-                <p><b>Capital</b>: ${country.capital}</p>
-                <p><b>Population</b>: ${formatNumberToK(country.population)}</p>
-                <p><b>Languages</b>: ${languages.join(', ')}</p>`;
-      })
-      .join('');
-    countryInfo.innerHTML = markup;
-
-    // coutries list rendering
+    returnOneCountry(countries);
   } else if (countries.length > 1 && countries.length <= 10) {
-    const markup = countries
-      .map(country => {
-        return `<a href="#">
-                <li data-country="${country.name}">
-                <img src="${country.flags.svg}" alt="flag of ${country.name}" width="50px">
-                <p style="display: inline"> ${country.name}</p>
-                </li>
-                </a>`;
-      })
-      .join('');
-    countryList.innerHTML = markup;
-
-    // go into details
-    function linkToDetails() {
-      countries = Array(
-        countries.find(
-          element => element.name === event.currentTarget.dataset.country
-        )
-      );
-      renderContriesList(countries);
-    }
-
-    for (const country of countries) {
-      countryList
-        .querySelector(`[data-country="${country.name}"]`)
-        .addEventListener('click', linkToDetails);
-    }
-
-    // too many results
+    returnMultipleCountries(countries);
   } else {
     Notiflix.Notify.info(
       'Too many matches found. Please enter a more specific name.'
     );
   }
 }
+
+// clear button
+clearBtn.addEventListener('click', () => {
+  inputCountry.value = '';
+  clearResult();
+  inputCountry.focus();
+  clearBtn.classList.add('is-hidden');
+});
